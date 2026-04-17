@@ -1,3 +1,42 @@
+
+/**
+ * @swagger
+ * /patients:
+ *   post:
+ *     summary: Create patient
+ *     tags: [Patients]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               age:
+ *                 type: number
+ *               diagnosis:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Patient created
+ */
+
+/**
+ * @swagger
+ * /patients:
+ *   get:
+ *     summary: Get all patients
+ *     tags: [Patients]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: List of patients
+ */
 import express from "express";
 import { db } from "../config/db.js";
 import { createPatient } from "../models/Patient.js";

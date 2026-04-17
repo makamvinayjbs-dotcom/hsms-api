@@ -1,3 +1,16 @@
+
+/**
+ * @swagger
+ * /beds:
+ *   get:
+ *     summary: Get all beds
+ *     tags: [Beds]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Bed list
+ */
 import express from "express";
 import { db } from "../config/db.js";
 

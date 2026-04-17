@@ -1,3 +1,48 @@
+/**
+ * @swagger
+ * /auth/register:
+ *   post:
+ *     summary: Register user
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: User registered
+ */
+
+/**
+ * @swagger
+ * /auth/login:
+ *   post:
+ *     summary: Login user
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: JWT token returned
+ */
 import express from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
@@ -32,29 +77,39 @@ router.post("/register", async (req, res) => {
   res.json({ msg: "Registered", user: { id: user.id, email, role } });
 });
 
-// LOGIN
 router.post("/login", async (req, res) => {
   const { email, password } = req.body;
-  console.log("LOGIN EMAIL:", email);
 
-  const user = db.users.find(u => u.email == email);
-  
+  console.log("LOGIN EMAIL:", email);
+  console.log("ALL USERS:", db.users);
+
+  const user = db.users.find(u => u.email === email);
+
   console.log("FOUND USER:", user);
 
-  if (!user) return res.status(400).json({ msg: "Invalid credentials" });
+  if (!user) {
+    return res.status(400).json({ msg: "Invalid credentials" });
+  }
 
-  // const match = await bcrypt.compare(password, user.password);
-  // if (!match) return res.status(400).json({ msg: "Invalid credentials" });
+  // TEMP FALLBACK SECRET (for testing only)
+  const secret = process.env.JWT_SECRET || "dev_secret_key_123";
 
   const token = jwt.sign(
-    { id: user.id, email: user.email, role: user.role },
-    process.env.JWT_SECRET,
+    {
+      id: user.id,
+      email: user.email,
+      role: user.role
+    },
+    secret,
     { expiresIn: "1h" }
   );
 
   user.lastLogin = new Date();
 
-  res.json({ msg: "Login success", token });
+  res.json({
+    msg: "Login success",
+    token
+  });
 });
 
 export default router;
