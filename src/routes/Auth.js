@@ -9,7 +9,7 @@ const router = express.Router();
 router.post("/register", async (req, res) => {
   const { name, email, password, role = "NURSE" } = req.body;
 
-  const existing = db.users.find(u => u.email === email);
+  const existing = db.users.find(u => u.email == email);
   if (existing) {
     return res.status(400).json({ msg: "User exists" });
   }
@@ -37,7 +37,7 @@ router.post("/login", async (req, res) => {
   const { email, password } = req.body;
   console.log("LOGIN EMAIL:", email);
 
-  const user = db.users.find(u => u.email === email);
+  const user = db.users.find(u => u.email == email);
   
   console.log("FOUND USER:", user);
 
