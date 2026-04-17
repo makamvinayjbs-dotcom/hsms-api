@@ -6,12 +6,19 @@ import patientRoutes from "./routes/Patient.js";
 import bedRoutes from "./routes/Bed.js";
 
 import errorHandler from "./middleware/errorHandler.js";
+import cors from "cors";
 
 dotenv.config();
 
 const app = express();
 
 app.use(express.json());
+app.use(cors({
+  origin: "*", // for development only
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  allowedHeaders: ["Content-Type", "Authorization"]
+}));
+
 
 // routes
 app.use("/auth", authRoutes);
