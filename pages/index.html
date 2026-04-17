@@ -1,13 +1,202 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
-    <title>Hello Express!</title>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width" />
-    <link rel="stylesheet" href="./style.css" />
-  </head>
-  <body>
-    <h1>Hello Express!</h1>
-    <p>Showing <code>pages/index.html</code></p>
-  </body>
+<html>
+<head>
+  <title>Hospital System Dashboard</title>
+  <style>
+    body { font-family: Arial; margin: 20px; background: #f8f9fa; }
+    h2 { text-align: center; }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+    }
+
+    .card {
+      background: white;
+      padding: 15px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    input, button {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+      margin-bottom: 10px;
+    }
+
+    button {
+      background: #007bff;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #0056b3;
+    }
+
+    pre {
+      background: #eee;
+      padding: 10px;
+      max-height: 200px;
+      overflow: auto;
+    }
+
+    .token {
+      font-size: 12px;
+      word-break: break-all;
+      background: #222;
+      color: #0f0;
+      padding: 10px;
+    }
+  </style>
+</head>
+
+<body>
+
+<h2>🏥 Hospital Management System</h2>
+
+<div class="grid">
+
+  <!-- REGISTER -->
+  <div class="card">
+    <h3>Register</h3>
+    <input id="r_name" placeholder="Name">
+    <input id="r_email" placeholder="Email">
+    <input id="r_pass" type="password" placeholder="Password">
+    <button onclick="register()">Register</button>
+  </div>
+
+  <!-- LOGIN -->
+  <div class="card">
+    <h3>Login</h3>
+    <input id="l_email" placeholder="Email">
+    <input id="l_pass" type="password" placeholder="Password">
+    <button onclick="login()">Login</button>
+
+    <h4>JWT Token</h4>
+    <div class="token" id="tokenBox">Not logged in</div>
+  </div>
+
+  <!-- PATIENT -->
+  <div class="card">
+    <h3>Create Patient</h3>
+    <input id="p_name" placeholder="Name">
+    <input id="p_age" placeholder="Age">
+    <input id="p_diag" placeholder="Diagnosis">
+    <button onclick="createPatient()">Create Patient</button>
+  </div>
+
+  <div class="card">
+    <h3>Patients</h3>
+    <button onclick="getPatients()">Load Patients</button>
+    <pre id="patientsBox"></pre>
+  </div>
+
+  <!-- BEDS -->
+  <div class="card">
+    <h3>Beds</h3>
+    <button onclick="getBeds()">Load Beds</button>
+    <pre id="bedsBox"></pre>
+  </div>
+
+  <!-- AUDIT -->
+  <div class="card">
+    <h3>Audit Logs</h3>
+    <button onclick="getLogs()">Load Logs</button>
+    <pre id="logsBox"></pre>
+  </div>
+
+</div>
+
+<script>
+const API = "http://localhost:5000";
+let token = "";
+
+/* ---------------- REGISTER ---------------- */
+async function register() {
+  const res = await fetch(`${API}/auth/register`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      name: r_name.value,
+      email: r_email.value,
+      password: r_pass.value
+    })
+  });
+
+  alert(JSON.stringify(await res.json(), null, 2));
+}
+
+/* ---------------- LOGIN ---------------- */
+async function login() {
+  const res = await fetch(`${API}/auth/login`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      email: l_email.value,
+      password: l_pass.value
+    })
+  });
+
+  const data = await res.json();
+
+  if (data.token) {
+    token = data.token;
+    tokenBox.innerText = token;
+  } else {
+    alert(JSON.stringify(data));
+  }
+}
+
+/* ---------------- CREATE PATIENT ---------------- */
+async function createPatient() {
+  const res = await fetch(`${API}/patients`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer " + token
+    },
+    body: JSON.stringify({
+      name: p_name.value,
+      age: p_age.value,
+      diagnosis: p_diag.value
+    })
+  });
+
+  const data = await res.json();
+  alert(JSON.stringify(data, null, 2));
+}
+
+/* ---------------- GET PATIENTS ---------------- */
+async function getPatients() {
+  const res = await fetch(`${API}/patients`, {
+    headers: { "Authorization": "Bearer " + token }
+  });
+
+  patientsBox.innerText = JSON.stringify(await res.json(), null, 2);
+}
+
+/* ---------------- GET BEDS ---------------- */
+async function getBeds() {
+  const res = await fetch(`${API}/beds`, {
+    headers: { "Authorization": "Bearer " + token }
+  });
+
+  bedsBox.innerText = JSON.stringify(await res.json(), null, 2);
+}
+
+/* ---------------- GET AUDIT LOGS ---------------- */
+async function getLogs() {
+  const res = await fetch(`${API}/audit`, {
+    headers: { "Authorization": "Bearer " + token }
+  });
+
+  logsBox.innerText = JSON.stringify(await res.json(), null, 2);
+}
+</script>
+
+</body>
 </html>
