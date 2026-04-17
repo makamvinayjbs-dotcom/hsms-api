@@ -35,8 +35,12 @@ router.post("/register", async (req, res) => {
 // LOGIN
 router.post("/login", async (req, res) => {
   const { email, password } = req.body;
+  console.log("LOGIN EMAIL:", email);
 
   const user = db.users.find(u => u.email === email);
+  
+  console.log("FOUND USER:", user);
+
   if (!user) return res.status(400).json({ msg: "Invalid credentials" });
 
   const match = await bcrypt.compare(password, user.password);
