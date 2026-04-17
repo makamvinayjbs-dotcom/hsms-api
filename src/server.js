@@ -7,6 +7,7 @@ import bedRoutes from "./routes/Bed.js";
 
 import errorHandler from "./middleware/errorHandler.js";
 import cors from "cors";
+import swaggerUi from "swagger-ui-express";
 import { swaggerSpec } from "./config/swagger.js";
 
 dotenv.config();
@@ -27,6 +28,8 @@ app.use("/patients", patientRoutes);
 app.use("/beds", bedRoutes);
 
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
+
 
 // error handler
 app.use(errorHandler);
